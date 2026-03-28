@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThumbAI BD - AI দিয়ে বাংলা থাম্বনেইল বানাও</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070f;--surface:#10101e;--card:#16162a;--border:#252540;--accent:#ff3c6e;--accent2:#7c3aff;--accent3:#00d4ff;--text:#f0f0ff;--muted:#8888aa}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 70% 50% at 15% 10%,rgba(124,58,255,.15) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 85% 80%,rgba(255,60,110,.12) 0%,transparent 60%);pointer-events:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:rgba(7,7,15,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Exo 2',sans-serif;font-weight:900;font-size:22px;background:linear-gradient(135deg,#fff,var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-btns{display:flex;gap:10px}
+.btn-o{background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:14px;padding:8px 18px;text-decoration:none;transition:all .2s}
+.btn-o:hover{border-color:var(--accent);color:var(--accent)}
+.btn-p{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:14px;font-weight:600;padding:8px 18px;text-decoration:none;transition:all .2s;box-shadow:0 4px 15px rgba(255,60,110,.3)}
+.btn-p:hover{transform:translateY(-2px)}
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 20px 60px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,60,110,.1);border:1px solid rgba(255,60,110,.3);border-radius:20px;color:var(--accent);font-size:13px;font-weight:600;padding:6px 16px;margin-bottom:24px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,60,110,.3)}50%{box-shadow:0 0 0 8px rgba(255,60,110,0)}}
+h1{font-family:'Exo 2',sans-serif;font-size:clamp(32px,7vw,68px);font-weight:900;line-height:1.1;margin-bottom:20px}
+.gr{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--muted);font-size:clamp(15px,2vw,18px);max-width:540px;line-height:1.7;margin-bottom:36px}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:50px}
+.btn-big{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:17px;font-weight:700;padding:16px 36px;text-decoration:none;transition:all .3s;box-shadow:0 8px 30px rgba(255,60,110,.35)}
+.btn-big:hover{transform:translateY(-3px)}
+.btn-big-o{background:transparent;border:1px solid var(--border);border-radius:12px;color:var(--text);font-family:'Hind Siliguri',sans-serif;font-size:17px;font-weight:600;padding:16px 36px;text-decoration:none;transition:all .2s}
+.btn-big-o:hover{border-color:var(--accent3);color:var(--accent3)}
+.section{position:relative;z-index:1;padding:80px 20px;max-width:1000px;margin:0 auto}
+.sec-title{font-family:'Exo 2',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:900;text-align:center;margin-bottom:10px}
+.sec-sub{color:var(--muted);text-align:center;font-size:15px;margin-bottom:50px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px}
+.step{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;text-align:center}
+.step-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Exo 2',sans-serif;font-weight:900;font-size:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step-icon{font-size:32px;margin-bottom:12px}
+.step-title{font-family:'Exo 2',sans-serif;font-weight:700;font-size:16px;margin-bottom:8px}
+.step-desc{color:var(--muted);font-size:13px;line-height:1.6}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.fc{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s;position:relative;overflow:hidden}
+.fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s}
+.fc:hover{border-color:rgba(255,60,110,.3);transform:translateY(-4px)}
+.fc:hover::before{opacity:1}
+.fi{font-size:36px;margin-bottom:16px}
+.ft{font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;margin-bottom:10px}
+.fd{color:var(--muted);font-size:14px;line-height:1.7}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;max-width:850px;margin:0 auto}
+.pc{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 24px;text-align:center;position:relative;overflow:hidden;transition:all .3s}
+.pc:hover{transform:translateY(-4px)}
+.pc.pop{border-color:var(--accent);box-shadow:0 0 40px rgba(255,60,110,.2)}
+.pc.yr{border-color:var(--accent2);box-shadow:0 0 40px rgba(124,58,255,.2)}
+.pop-b{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:20px;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;letter-spacing:1px}
+.yr-b{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,var(--accent2),var(--accent3));border-radius:20px;color:#fff;font-size:10px;font-weight:700;padding:3px 10px;letter-spacing:1px}
+.pname{font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;margin-bottom:14px}
+.pamt{font-family:'Exo 2',sans-serif;font-weight:900;font-size:46px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.pper{color:var(--muted);font-size:13px;margin-bottom:12px}
+.pcred{font-size:13px;color:var(--accent3);font-weight:600;margin-bottom:20px}
+.pf{list-style:none;text-align:left;margin-bottom:24px}
+.pf li{padding:7px 0;color:var(--muted);font-size:13px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.pf li::before{content:'✓';color:var(--accent);font-weight:700}
+.contact-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;text-align:center;max-width:600px;margin:0 auto}
+.cname{font-family:'Exo 2',sans-serif;font-weight:900;font-size:28px;margin-bottom:8px}
+.citems{display:flex;flex-direction:column;gap:14px;margin-top:24px}
+.citem{display:flex;align-items:center;gap:14px;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;transition:all .2s;text-decoration:none;color:var(--text)}
+.citem:hover{border-color:var(--accent)}
+.clabel{font-size:12px;color:var(--muted)}
+.cval{font-weight:600;font-size:16px}
+footer{position:relative;z-index:1;text-align:center;padding:30px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">🎨 ThumbAI BD</div>
+  <div class="nav-btns">
+    <a href="login.html" class="btn-o">লগইন</a>
+    <a href="register.html" class="btn-p">শুরু করো</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="badge">✨ Gemini AI পাওয়ার্ড থাম্বনেইল জেনারেটর</div>
+  <h1>বাংলা <span class="gr">থাম্বনেইল</span><br>এখন <span class="gr">AI দিয়ে</span></h1>
+  <p class="hero-sub">YouTube ও Facebook-এর জন্য প্রফেশনাল বাংলা থাম্বনেইল বানাও মাত্র কয়েক সেকেন্ডে।</p>
+  <div class="hero-btns">
+    <a href="register.html" class="btn-big">🚀 ফ্রিতে শুরু করো</a>
+    <a href="#how" class="btn-big-o">কিভাবে কাজ করে?</a>
+  </div>
+</section>
+
+<section class="section" id="how">
+  <h2 class="sec-title">কিভাবে কাজ করে?</h2>
+  <p class="sec-sub">মাত্র ৪টি ধাপে প্রফেশনাল থাম্বনেইল</p>
+  <div class="steps">
+    <div class="step"><div class="step-num">১</div><div class="step-icon">📝</div><div class="step-title">টাইটেল দাও</div><div class="step-desc">বাংলায় তোমার ভিডিওর টাইটেল লিখো</div></div>
+    <div class="step"><div class="step-num">২</div><div class="step-icon">🎨</div><div class="step-title">স্টাইল বেছে নাও</div><div class="step-desc">Platform, রঙ, স্টাইল সব নিজে ঠিক করো</div></div>
+    <div class="step"><div class="step-num">৩</div><div class="step-icon">🤖</div><div class="step-title">AI বানাবে</div><div class="step-desc">Gemini AI সেকেন্ডে থাম্বনেইল তৈরি করে দেবে</div></div>
+    <div class="step"><div class="step-num">৪</div><div class="step-icon">⬇️</div><div class="step-title">Download করো</div><div class="step-desc">HD quality তে ডাউনলোড করো</div></div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <h2 class="sec-title">কেন ThumbAI BD?</h2>
+  <p class="sec-sub">বাংলাদেশের Content Creator-দের জন্য তৈরি</p>
+  <div class="features-grid">
+    <div class="fc"><div class="fi">🤖</div><div class="ft">Gemini AI</div><div class="fd">Google-এর সেরা AI দিয়ে প্রফেশনাল থাম্বনেইল তৈরি হয় মাত্র সেকেন্ডে।</div></div>
+    <div class="fc"><div class="fi">🇧🇩</div><div class="ft">বাংলা সাপোর্ট</div><div class="fd">স্টাইলিশ বোল্ড বাংলা টাইপোগ্রাফি — YouTube ও Facebook দুটোর জন্যই।</div></div>
+    <div class="fc"><div class="fi">🎨</div><div class="ft">কাস্টম রঙ</div><div class="fd">নিজে টেক্সট কালার বেছে দাও অথবা Gemini কে Auto কালার বেছে নিতে দাও।</div></div>
+    <div class="fc"><div class="fi">📐</div><div class="ft">সব ফরম্যাট</div><div class="fd">YouTube 16:9, Facebook 1:1, Stories 9:16 সব aspect ratio।</div></div>
+    <div class="fc"><div class="fi">🖼️</div><div class="ft">Reference ছবি</div><div class="fd">নিজের ছবি দিয়ে AI কে বলো কেমন থাম্বনেইল বানাতে হবে।</div></div>
+    <div class="fc"><div class="fi">💰</div><div class="ft">সাশ্রয়ী মূল্য</div><div class="fd">মাত্র ১৫০ টাকা/মাসে ৫০০টি থাম্বনেইল। bKash ও Nagad সাপোর্ট।</div></div>
+  </div>
+</section>
+
+<section class="section" id="pricing">
+  <h2 class="sec-title">মূল্য তালিকা</h2>
+  <p class="sec-sub">ফ্রিতে শুরু করো, পরে upgrade করো</p>
+  <div class="pricing-grid">
+    <div class="pc">
+      <div class="pname">ফ্রি</div>
+      <div class="pamt">০</div>
+      <div class="pper">টাকা</div>
+      <div class="pcred">🎯 ৫০ ক্রেডিট = ৫টি থাম্বনেইল</div>
+      <ul class="pf"><li>৫টি থাম্বনেইল</li><li>সব ফরম্যাট</li><li>HD Download</li></ul>
+      <a href="register.html" class="btn-o" style="display:block;text-align:center;padding:12px;border-radius:10px;">শুরু করো</a>
+    </div>
+    <div class="pc pop">
+      <div class="pop-b">সেরা</div>
+      <div class="pname">মাসিক</div>
+      <div class="pamt">১৫০</div>
+      <div class="pper">টাকা/মাস</div>
+      <div class="pcred">🎯 ৫০০০ ক্রেডিট = ৫০০টি থাম্বনেইল</div>
+      <ul class="pf"><li>৫০০টি থাম্বনেইল</li><li>সব স্টাইল ও রঙ</li><li>Reference ছবি</li><li>Priority সাপোর্ট</li></ul>
+      <a href="register.html" class="btn-p" style="display:block;text-align:center;padding:12px;border-radius:10px;">এখনই নাও</a>
+    </div>
+    <div class="pc yr">
+      <div class="yr-b">সাশ্রয়ী</div>
+      <div class="pname">বার্ষিক</div>
+      <div class="pamt">১০০০</div>
+      <div class="pper">টাকা/বছর</div>
+      <div class="pcred">🎯 ৬০,০০০ ক্রেডিট = ৬০০০টি থাম্বনেইল</div>
+      <ul class="pf"><li>৬০০০টি থাম্বনেইল</li><li>সব সুবিধা</li><li>সর্বোচ্চ Priority</li><li>বছরে সবচেয়ে সাশ্রয়ী</li></ul>
+      <a href="register.html" style="display:block;text-align:center;padding:12px;border-radius:10px;background:linear-gradient(135deg,#7c3aff,#00d4ff);color:#fff;text-decoration:none;font-weight:700;">বছরের প্ল্যান নাও</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="contact">
+  <h2 class="sec-title">যোগাযোগ করো</h2>
+  <p class="sec-sub">যেকোনো সমস্যায় সরাসরি যোগাযোগ করো</p>
+  <div class="contact-card">
+    <div class="cname">Shajalal Kabir</div>
+    <div style="color:var(--muted);font-size:14px;">ThumbAI BD — Creator & Developer</div>
+    <div class="citems">
+      <a href="https://wa.me/8801747196759" target="_blank" class="citem">
+        <div style="font-size:24px">💬</div>
+        <div><div class="clabel">WhatsApp</div><div class="cval">01747196759</div></div>
+      </a>
+      <a href="mailto:sagorffcl@gmail.com" class="citem">
+        <div style="font-size:24px">📧</div>
+        <div><div class="clabel">Email</div><div class="cval">sagorffcl@gmail.com</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© ২০২৫ ThumbAI BD | Developed by <strong>Shajalal Kabir</strong> | Made with ❤️ for Bangladeshi Content Creators</p>
+</footer>
+</body>
+</html>
