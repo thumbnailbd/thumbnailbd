@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel - ThumbAI BD</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070f;--surface:#10101e;--card:#16162a;--border:#252540;--accent:#ff3c6e;--accent2:#7c3aff;--accent3:#00d4ff;--text:#f0f0ff;--muted:#8888aa;--green:#00c853;--yellow:#ffd600}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:380px;position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3))}
+.admin-logo{text-align:center;margin-bottom:30px}
+.admin-logo .icon{font-size:48px;margin-bottom:10px}
+.admin-logo h2{font-family:'Exo 2',sans-serif;font-weight:900;font-size:22px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.admin-logo p{color:var(--muted);font-size:13px;margin-top:4px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:.5px;text-transform:uppercase}
+.field input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Hind Siliguri',sans-serif;font-size:15px;padding:12px 16px;outline:none;transition:all .2s}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,60,110,.2)}
+.login-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:700;padding:14px;margin-top:8px;transition:all .3s;box-shadow:0 6px 25px rgba(255,60,110,.3)}
+.login-btn:hover{transform:translateY(-2px)}
+.err-msg{color:#ff8fab;font-size:13px;margin-top:10px;text-align:center;display:none}
+
+/* DASHBOARD */
+.admin-wrap{display:none}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(7,7,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Exo 2',sans-serif;font-weight:900;font-size:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-right{display:flex;align-items:center;gap:10px}
+.admin-badge{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:20px;color:#fff;font-size:11px;font-weight:700;padding:3px 12px;letter-spacing:1px}
+.logout-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;padding:7px 14px;transition:all .2s}
+.logout-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.main{padding:20px;max-width:1100px;margin:0 auto}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.s1::before{background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.stat-card.s2::before{background:linear-gradient(90deg,var(--accent2),var(--accent3))}
+.stat-card.s3::before{background:linear-gradient(90deg,var(--accent3),var(--green))}
+.stat-card.s4::before{background:linear-gradient(90deg,var(--yellow),var(--accent))}
+.stat-icon{font-size:28px;margin-bottom:10px}
+.stat-num{font-family:'Exo 2',sans-serif;font-weight:900;font-size:32px;margin-bottom:4px}
+.stat-label{color:var(--muted);font-size:13px}
+
+/* SECTION */
+.sec-title{font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.sec-title span{font-size:20px}
+
+/* USER TABLE */
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:24px}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.search-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Hind Siliguri',sans-serif;font-size:13px;padding:8px 14px;outline:none;width:220px;transition:all .2s}
+.search-box:focus{border-color:var(--accent)}
+.refresh-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;padding:8px 14px;transition:all .2s}
+.refresh-btn:hover{border-color:var(--accent3);color:var(--accent3)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--surface);color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1px;padding:12px 16px;text-align:left;text-transform:uppercase}
+td{padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.plan-tag{border-radius:20px;font-size:11px;font-weight:700;padding:3px 10px;letter-spacing:1px}
+.plan-free{background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.plan-monthly{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.plan-yearly{background:linear-gradient(135deg,var(--accent2),var(--accent3));color:#fff}
+.credit-num{font-family:'Exo 2',sans-serif;font-weight:700;color:var(--accent3)}
+
+/* ACTION BUTTONS */
+.act-btn{border:none;border-radius:7px;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;transition:all .2s;margin-right:4px}
+.btn-credit{background:rgba(0,212,255,.15);color:var(--accent3)}
+.btn-credit:hover{background:rgba(0,212,255,.3)}
+.btn-plan{background:rgba(124,58,255,.15);color:#a78bff}
+.btn-plan:hover{background:rgba(124,58,255,.3)}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:30px;width:100%;max-width:420px;position:relative}
+.modal-close{position:absolute;top:14px;right:14px;background:var(--surface);border:1px solid var(--border);border-radius:50%;color:var(--muted);cursor:pointer;width:30px;height:30px;font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-title{font-family:'Exo 2',sans-serif;font-weight:700;font-size:18px;margin-bottom:6px}
+.modal-sub{color:var(--muted);font-size:13px;margin-bottom:20px}
+.modal-field{margin-bottom:14px}
+.modal-field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.modal-field input,.modal-field select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:9px;color:var(--text);font-family:'Hind Siliguri',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:all .2s}
+.modal-field input:focus,.modal-field select:focus{border-color:var(--accent)}
+.modal-field select option{background:var(--card)}
+.preset-btns{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.preset-btn{background:var(--surface);border:1px solid var(--border);border-radius:7px;color:var(--muted);cursor:pointer;font-size:12px;padding:5px 10px;transition:all .2s}
+.preset-btn:hover{border-color:var(--accent3);color:var(--accent3)}
+.save-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:11px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:15px;font-weight:700;padding:13px;margin-top:6px;transition:all .3s}
+.save-btn:hover{transform:translateY(-2px)}
+.success-msg{background:rgba(0,200,83,.1);border:1px solid rgba(0,200,83,.3);border-radius:9px;color:var(--green);font-size:13px;padding:10px 14px;margin-top:12px;display:none}
+
+/* LOADING */
+.loading{text-align:center;padding:40px;color:var(--muted)}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(max-width:600px){
+  th:nth-child(3),td:nth-child(3),th:nth-child(5),td:nth-child(5){display:none}
+  .stat-num{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ADMIN LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="admin-logo">
+      <div class="icon">🔐</div>
+      <h2>Admin Panel</h2>
+      <p>ThumbAI BD — শুধুমাত্র Admin এর জন্য</p>
+    </div>
+    <div class="field">
+      <label>Admin Email</label>
+      <input type="email" id="adminEmail" placeholder="admin@email.com">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="adminPass" placeholder="পাসওয়ার্ড দিন">
+    </div>
+    <button class="login-btn" onclick="adminLogin()">🔐 লগইন করুন</button>
+    <div class="err-msg" id="errMsg">ইমেইল বা পাসওয়ার্ড ভুল!</div>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div class="admin-wrap" id="adminWrap">
+  <nav>
+    <div class="nav-logo">⚙️ ThumbAI BD Admin</div>
+    <div class="nav-right">
+      <div class="admin-badge">ADMIN</div>
+      <button class="logout-btn" onclick="adminLogout()">লগআউট</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <!-- STATS -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card s1">
+        <div class="stat-icon">👥</div>
+        <div class="stat-num" id="totalUsers">-</div>
+        <div class="stat-label">মোট User</div>
+      </div>
+      <div class="stat-card s2">
+        <div class="stat-icon">🎨</div>
+        <div class="stat-num" id="totalThumbs">-</div>
+        <div class="stat-label">মোট থাম্বনেইল তৈরি</div>
+      </div>
+      <div class="stat-card s3">
+        <div class="stat-icon">💎</div>
+        <div class="stat-num" id="paidUsers">-</div>
+        <div class="stat-label">Paid User</div>
+      </div>
+      <div class="stat-card s4">
+        <div class="stat-icon">🆓</div>
+        <div class="stat-num" id="freeUsers">-</div>
+        <div class="stat-label">Free User</div>
+      </div>
+    </div>
+
+    <!-- USER TABLE -->
+    <div class="sec-title"><span>👤</span> সকল User</div>
+    <div class="table-wrap">
+      <div class="table-header">
+        <input class="search-box" type="text" placeholder="🔍 Email বা নাম খোঁজো..." oninput="filterUsers(this.value)">
+        <button class="refresh-btn" onclick="loadUsers()">🔄 Refresh</button>
+      </div>
+      <div id="tableBody">
+        <div class="loading"><div class="spinner"></div>লোড হচ্ছে...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CREDIT MODAL -->
+<div class="modal-overlay" id="creditModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('creditModal')">✕</button>
+    <div class="modal-title">💳 ক্রেডিট দাও</div>
+    <div class="modal-sub" id="creditUserName">User এর নাম</div>
+    <div class="modal-field">
+      <label>ক্রেডিট পরিমাণ</label>
+      <input type="number" id="creditAmount" placeholder="যেমন: 5000" min="1">
+      <div class="preset-btns">
+        <button class="preset-btn" onclick="setCredit(50)">৫০ (ফ্রি)</button>
+        <button class="preset-btn" onclick="setCredit(5000)">৫০০০ (মাসিক)</button>
+        <button class="preset-btn" onclick="setCredit(60000)">৬০,০০০ (বার্ষিক)</button>
+        <button class="preset-btn" onclick="setCredit(100)">+১০০</button>
+        <button class="preset-btn" onclick="setCredit(500)">+৫০০</button>
+      </div>
+    </div>
+    <div class="modal-field">
+      <label>অপারেশন</label>
+      <select id="creditOp">
+        <option value="set">নির্দিষ্ট পরিমাণ সেট করো</option>
+        <option value="add">বর্তমান ক্রেডিটে যোগ করো</option>
+      </select>
+    </div>
+    <button class="save-btn" onclick="saveCredit()">✅ সেভ করো</button>
+    <div class="success-msg" id="creditSuccess">✅ ক্রেডিট আপডেট হয়েছে!</div>
+  </div>
+</div>
+
+<!-- PLAN MODAL -->
+<div class="modal-overlay" id="planModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('planModal')">✕</button>
+    <div class="modal-title">⭐ Plan পরিবর্তন করো</div>
+    <div class="modal-sub" id="planUserName">User এর নাম</div>
+    <div class="modal-field">
+      <label>প্ল্যান বেছে নাও</label>
+      <select id="planSelect">
+        <option value="free">🆓 Free (৫০ ক্রেডিট)</option>
+        <option value="monthly">💎 Monthly (৫০০০ ক্রেডিট)</option>
+        <option value="yearly">👑 Yearly (৬০,০০০ ক্রেডিট)</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>ক্রেডিটও Auto সেট হবে?</label>
+      <select id="autoCredit">
+        <option value="yes">হ্যাঁ — প্ল্যান অনুযায়ী ক্রেডিট দাও</option>
+        <option value="no">না — শুধু প্ল্যান পরিবর্তন করো</option>
+      </select>
+    </div>
+    <button class="save-btn" onclick="savePlan()">✅ সেভ করো</button>
+    <div class="success-msg" id="planSuccess">✅ প্ল্যান আপডেট হয়েছে!</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, collection, getDocs, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAGXcRUon_JcN0V8u-QWYlxyYsH_5k1jEg",
+  authDomain: "thumbnailbd.firebaseapp.com",
+  projectId: "thumbnailbd",
+  storageBucket: "thumbnailbd.firebasestorage.app",
+  messagingSenderId: "644020331665",
+  appId: "1:644020331665:web:3c64d94ee88f23e0228b30"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Admin email — শুধু এই email admin হতে পারবে
+const ADMIN_EMAIL = "sagorffcl@gmail.com";
+
+let allUsers = [];
+let selectedUserId = null;
+
+onAuthStateChanged(auth, (user) => {
+  if (user && user.email === ADMIN_EMAIL) {
+    document.getElementById('loginWrap').style.display = 'none';
+    document.getElementById('adminWrap').style.display = 'block';
+    loadUsers();
+  } else if (user) {
+    signOut(auth);
+    showErr('এই account এ admin access নেই!');
+  }
+});
+
+window.adminLogin = async function() {
+  const email = document.getElementById('adminEmail').value;
+  const pass = document.getElementById('adminPass').value;
+  if (!email || !pass) return showErr('সব তথ্য দিন!');
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch(e) {
+    showErr('ইমেইল বা পাসওয়ার্ড ভুল!');
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+window.adminLogout = async function() {
+  await signOut(auth);
+  document.getElementById('loginWrap').style.display = 'flex';
+  document.getElementById('adminWrap').style.display = 'none';
+}
+
+window.loadUsers = async function() {
+  document.getElementById('tableBody').innerHTML = '<div class="loading"><div class="spinner"></div>লোড হচ্ছে...</div>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    allUsers = [];
+    let totalThumbs = 0, paidCount = 0, freeCount = 0;
+
+    snap.forEach(d => {
+      const data = { id: d.id, ...d.data() };
+      allUsers.push(data);
+      totalThumbs += data.thumbnailCount || 0;
+      if (data.plan === 'free') freeCount++;
+      else paidCount++;
+    });
+
+    document.getElementById('totalUsers').textContent = allUsers.length;
+    document.getElementById('totalThumbs').textContent = totalThumbs;
+    document.getElementById('paidUsers').textContent = paidCount;
+    document.getElementById('freeUsers').textContent = freeCount;
+
+    renderTable(allUsers);
+  } catch(e) {
+    document.getElementById('tableBody').innerHTML = '<div class="loading">লোড করতে সমস্যা হয়েছে</div>';
+  }
+}
+
+function renderTable(users) {
+  if (users.length === 0) {
+    document.getElementById('tableBody').innerHTML = '<div class="loading">কোনো user পাওয়া যায়নি</div>';
+    return;
+  }
+
+  let html = `<table>
+    <thead>
+      <tr>
+        <th>নাম / Email</th>
+        <th>প্ল্যান</th>
+        <th>ক্রেডিট</th>
+        <th>থাম্বনেইল</th>
+        <th>যোগদান</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  users.forEach(u => {
+    const planClass = u.plan === 'yearly' ? 'plan-yearly' : u.plan === 'monthly' ? 'plan-monthly' : 'plan-free';
+    const planText = u.plan === 'yearly' ? 'YEARLY' : u.plan === 'monthly' ? 'MONTHLY' : 'FREE';
+    const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('bn-BD') : '-';
+    
+    html += `<tr>
+      <td>
+        <div style="font-weight:600">${u.name || 'নাম নেই'}</div>
+        <div style="font-size:12px;color:var(--muted)">${u.email || '-'}</div>
+      </td>
+      <td><span class="plan-tag ${planClass}">${planText}</span></td>
+      <td><span class="credit-num">${u.credits ?? 0}</span></td>
+      <td>${u.thumbnailCount || 0}টি</td>
+      <td style="font-size:12px;color:var(--muted)">${date}</td>
+      <td>
+        <button class="act-btn btn-credit" onclick="openCreditModal('${u.id}','${u.name||u.email}',${u.credits??0})">💳 ক্রেডিট</button>
+        <button class="act-btn btn-plan" onclick="openPlanModal('${u.id}','${u.name||u.email}','${u.plan||'free'}')">⭐ Plan</button>
+      </td>
+    </tr>`;
+  });
+
+  html += '</tbody></table>';
+  document.getElementById('tableBody').innerHTML = html;
+}
+
+window.filterUsers = function(query) {
+  const q = query.toLowerCase();
+  const filtered = allUsers.filter(u =>
+    (u.name||'').toLowerCase().includes(q) ||
+    (u.email||'').toLowerCase().includes(q)
+  );
+  renderTable(filtered);
+}
+
+window.openCreditModal = function(uid, name, currentCredits) {
+  selectedUserId = uid;
+  document.getElementById('creditUserName').textContent = `${name} — বর্তমান ক্রেডিট: ${currentCredits}`;
+  document.getElementById('creditAmount').value = '';
+  document.getElementById('creditSuccess').style.display = 'none';
+  document.getElementById('creditModal').classList.add('show');
+}
+
+window.openPlanModal = function(uid, name, currentPlan) {
+  selectedUserId = uid;
+  document.getElementById('planUserName').textContent = name;
+  document.getElementById('planSelect').value = currentPlan;
+  document.getElementById('planSuccess').style.display = 'none';
+  document.getElementById('planModal').classList.add('show');
+}
+
+window.closeModal = function(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+window.setCredit = function(amount) {
+  document.getElementById('creditAmount').value = amount;
+}
+
+window.saveCredit = async function() {
+  const amount = parseInt(document.getElementById('creditAmount').value);
+  const op = document.getElementById('creditOp').value;
+  if (!amount || amount < 1) return alert('সঠিক ক্রেডিট পরিমাণ দিন!');
+
+  try {
+    const ref = doc(db, 'users', selectedUserId);
+    if (op === 'set') {
+      await updateDoc(ref, { credits: amount });
+    } else {
+      const snap = await getDoc(ref);
+      const current = snap.data().credits || 0;
+      await updateDoc(ref, { credits: current + amount });
+    }
+    document.getElementById('creditSuccess').style.display = 'block';
+    setTimeout(() => { closeModal('creditModal'); loadUsers(); }, 1500);
+  } catch(e) {
+    alert('সমস্যা হয়েছে: ' + e.message);
+  }
+}
+
+window.savePlan = async function() {
+  const plan = document.getElementById('planSelect').value;
+  const autoCredit = document.getElementById('autoCredit').value;
+  const creditMap = { free: 50, monthly: 5000, yearly: 60000 };
+
+  try {
+    const ref = doc(db, 'users', selectedUserId);
+    const updateData = { plan };
+    if (autoCredit === 'yes') updateData.credits = creditMap[plan];
+    await updateDoc(ref, updateData);
+    document.getElementById('planSuccess').style.display = 'block';
+    setTimeout(() => { closeModal('planModal'); loadUsers(); }, 1500);
+  } catch(e) {
+    alert('সমস্যা হয়েছে: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>
