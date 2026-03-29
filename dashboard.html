@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - ThumbAI BD</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Exo+2:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07070f;--surface:#10101e;--card:#16162a;--border:#252540;--accent:#ff3c6e;--accent2:#7c3aff;--accent3:#00d4ff;--text:#f0f0ff;--muted:#8888aa;--glow:rgba(255,60,110,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Hind Siliguri',sans-serif;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse 60% 40% at 10% 20%,rgba(124,58,255,.08) 0%,transparent 60%);pointer-events:none}
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(7,7,15,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Exo 2',sans-serif;font-weight:900;font-size:20px;background:linear-gradient(135deg,#fff,var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-right{display:flex;align-items:center;gap:10px}
+.uname{font-size:13px;color:var(--muted)}
+.plan-badge{border-radius:20px;color:#fff;font-size:11px;font-weight:700;padding:3px 10px;letter-spacing:1px}
+.plan-free{background:var(--surface);border:1px solid var(--border);color:var(--muted)}
+.plan-monthly{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.plan-yearly{background:linear-gradient(135deg,var(--accent2),var(--accent3))}
+.logout-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:13px;padding:7px 14px;transition:all .2s}
+.logout-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+.layout{position:relative;z-index:1;display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 57px)}
+@media(max-width:768px){.layout{grid-template-columns:1fr}}
+.sidebar{border-right:1px solid var(--border);padding:18px;overflow-y:auto;max-height:calc(100vh - 57px);position:sticky;top:57px}
+@media(max-width:768px){.sidebar{max-height:none;position:static;border-right:none;border-bottom:1px solid var(--border)}}
+
+.sec-label{font-family:'Exo 2',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px}
+.tg{display:flex;flex-wrap:wrap;gap:7px}
+.tb{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;font-weight:500;padding:7px 13px;transition:all .2s}
+.tb:hover{border-color:var(--accent);color:var(--text)}
+.tb.active{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff;box-shadow:0 3px 12px var(--glow)}
+
+input[type="text"],textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'Hind Siliguri',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:all .2s}
+input[type="text"]:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+textarea{resize:vertical;min-height:65px}
+
+/* Color picker row */
+.color-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.color-auto{background:linear-gradient(135deg,var(--accent),var(--accent2),var(--accent3));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;font-weight:700;padding:7px 13px;transition:all .2s}
+.color-auto.active{box-shadow:0 0 0 2px white,0 0 0 4px var(--accent)}
+.color-swatch{width:34px;height:34px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+.color-swatch.active{border-color:white;transform:scale(1.15)}
+.color-custom-wrap{display:flex;align-items:center;gap:8px;margin-top:8px}
+.color-custom-wrap label{font-size:12px;color:var(--muted)}
+input[type="color"]{width:36px;height:36px;border:none;border-radius:8px;cursor:pointer;padding:2px;background:var(--surface)}
+
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative}
+.upload-area:hover{border-color:var(--accent);background:rgba(255,60,110,.04)}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.upload-preview{width:100%;max-height:110px;object-fit:cover;border-radius:8px;margin-top:8px;display:none}
+
+/* Credits bar */
+.credit-bar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:14px}
+.credit-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.credit-label{font-size:13px;color:var(--muted)}
+.credit-num{font-family:'Exo 2',sans-serif;font-weight:700;font-size:15px;color:var(--accent3)}
+.credit-progress{height:5px;background:var(--border);border-radius:4px}
+.credit-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s}
+.upgrade-btn{display:block;text-align:center;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;font-weight:700;padding:8px;margin-top:8px;text-decoration:none;transition:all .2s}
+.upgrade-btn:hover{transform:translateY(-1px)}
+
+.gen-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:14px;color:#fff;cursor:pointer;font-family:'Exo 2',sans-serif;font-size:17px;font-weight:700;padding:16px;transition:all .3s;box-shadow:0 6px 25px var(--glow);position:relative;overflow:hidden}
+.gen-btn:hover{transform:translateY(-2px);box-shadow:0 10px 35px var(--glow)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.shine{position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:shine 2s infinite}
+@keyframes shine{to{left:150%}}
+
+.main-area{padding:24px}
+.placeholder{min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted);text-align:center}
+.big-icon{font-size:64px;opacity:.3}
+.loader-wrap{display:none;text-align:center;padding:60px 20px}
+.spinner{width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{color:var(--muted);font-size:14px}
+.result-area{display:none}
+.result-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.result-title{font-family:'Exo 2',sans-serif;font-weight:700;font-size:16px;color:var(--accent3)}
+.result-btns{display:flex;gap:10px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--accent3),#0066ff);border:none;border-radius:8px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;font-weight:700;padding:8px 16px;transition:all .2s;text-decoration:none}
+.dl-btn:hover{transform:translateY(-2px)}
+.retry-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:13px;padding:8px 16px;transition:all .2s}
+.retry-btn:hover{border-color:var(--accent)}
+#resultImg{max-width:100%;border-radius:12px;box-shadow:0 10px 50px rgba(0,0,0,.6)}
+
+/* Upgrade Modal */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:36px;max-width:480px;width:90%;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:50%;color:var(--muted);cursor:pointer;width:32px;height:32px;font-size:18px;display:flex;align-items:center;justify-content:center}
+.modal-title{font-family:'Exo 2',sans-serif;font-weight:900;font-size:22px;margin-bottom:6px}
+.modal-sub{color:var(--muted);font-size:14px;margin-bottom:24px}
+.plan-options{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.plan-opt{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:20px;text-align:center;cursor:pointer;transition:all .2s}
+.plan-opt:hover,.plan-opt.selected{border-color:var(--accent)}
+.plan-opt-name{font-family:'Exo 2',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px}
+.plan-opt-price{font-family:'Exo 2',sans-serif;font-weight:900;font-size:28px;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.plan-opt-credits{font-size:12px;color:var(--accent3);margin-top:4px}
+.pay-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;cursor:pointer;font-family:'Hind Siliguri',sans-serif;font-size:16px;font-weight:700;padding:15px;transition:all .3s}
+.pay-btn:hover{transform:translateY(-2px)}
+.contact-note{text-align:center;margin-top:16px;color:var(--muted);font-size:13px}
+.contact-note a{color:var(--accent3);text-decoration:none}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">🎨 ThumbAI BD</div>
+  <div class="nav-right">
+    <div class="uname" id="userName">লোড হচ্ছে...</div>
+    <div class="plan-badge plan-free" id="planBadge">FREE</div>
+    <button class="logout-btn" onclick="logoutUser()">লগআউট</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <!-- Credits -->
+    <div class="credit-bar" id="creditBar">
+      <div class="credit-top">
+        <div class="credit-label">ক্রেডিট বাকি</div>
+        <div class="credit-num" id="creditNum">লোড হচ্ছে...</div>
+      </div>
+      <div class="credit-progress"><div class="credit-fill" id="creditFill" style="width:100%"></div></div>
+      <div id="upgradeWrap" style="display:none">
+        <button class="upgrade-btn" onclick="showUpgrade()">⚡ Upgrade করো</button>
+      </div>
+    </div>
+
+    <!-- Platform -->
+    <div class="card">
+      <div class="sec-label">প্ল্যাটফর্ম</div>
+      <div class="tg">
+        <button class="tb active" onclick="sel(this,'platform','youtube')">▶ YouTube</button>
+        <button class="tb" onclick="sel(this,'platform','facebook')">👥 Facebook</button>
+      </div>
+    </div>
+
+    <!-- Ratio -->
+    <div class="card">
+      <div class="sec-label">সাইজ / Aspect Ratio</div>
+      <div class="tg" id="ratioGroup">
+        <button class="tb active" onclick="sel(this,'ratio','16:9')">16:9 (YouTube)</button>
+        <button class="tb" onclick="sel(this,'ratio','9:16')">9:16 (Shorts)</button>
+      </div>
+    </div>
+
+    <!-- Title -->
+    <div class="card">
+      <div class="sec-label">থাম্বনেইলের টাইটেল</div>
+      <div style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px">বাংলা টাইটেল *</label>
+        <input type="text" id="titleBn" placeholder="যেমন: আমার জীবনের সেরা ভ্রমণ!">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px">ইংরেজিতে Spelling (AI এর জন্য)</label>
+        <input type="text" id="titleEn" placeholder="যেমন: amar jiboner sera bhromon!">
+      </div>
+    </div>
+
+    <!-- Text Color -->
+    <div class="card">
+      <div class="sec-label">টেক্সট কালার</div>
+      <div class="color-row">
+        <button class="color-auto active" id="colorAutoBtn" onclick="setColorAuto()">🎨 Auto (AI বেছে নেবে)</button>
+        <div class="color-swatch" style="background:#ffffff" onclick="setColor(this,'#ffffff')" title="সাদা"></div>
+        <div class="color-swatch" style="background:#ffff00" onclick="setColor(this,'#ffff00')" title="হলুদ"></div>
+        <div class="color-swatch" style="background:#ff3c6e" onclick="setColor(this,'#ff3c6e')" title="লাল"></div>
+        <div class="color-swatch" style="background:#00d4ff" onclick="setColor(this,'#00d4ff')" title="নীল"></div>
+        <div class="color-swatch" style="background:#00ff88" onclick="setColor(this,'#00ff88')" title="সবুজ"></div>
+        <div class="color-swatch" style="background:#ff8c00" onclick="setColor(this,'#ff8c00')" title="কমলা"></div>
+        <div class="color-swatch" style="background:#000000;border:1px solid #555" onclick="setColor(this,'#000000')" title="কালো"></div>
+      </div>
+      <div class="color-custom-wrap">
+        <label>কাস্টম কালার:</label>
+        <input type="color" id="customColor" value="#ffffff" onchange="setCustomColor(this.value)">
+        <span id="customColorHex" style="font-size:12px;color:var(--muted)">#ffffff</span>
+      </div>
+    </div>
+
+    <!-- Style -->
+    <div class="card">
+      <div class="sec-label">ডিজাইন স্টাইল</div>
+      <div class="tg">
+        <button class="tb active" onclick="sel(this,'style','bold-dramatic')">🔥 Bold</button>
+        <button class="tb" onclick="sel(this,'style','cinematic')">🎬 Cinematic</button>
+        <button class="tb" onclick="sel(this,'style','minimal')">✨ Minimal</button>
+        <button class="tb" onclick="sel(this,'style','news')">📰 News</button>
+        <button class="tb" onclick="sel(this,'style','vlog')">🎥 Vlog</button>
+        <button class="tb" onclick="sel(this,'style','colorful')">🌈 Colorful</button>
+      </div>
+    </div>
+
+    <!-- BG Color -->
+    <div class="card">
+      <div class="sec-label">ব্যাকগ্রাউন্ড রঙ</div>
+      <div class="tg">
+        <button class="tb active" onclick="sel(this,'color','dark')">🌑 Dark</button>
+        <button class="tb" onclick="sel(this,'color','light')">☀️ Light</button>
+        <button class="tb" onclick="sel(this,'color','red-black')">❤️ Red & Black</button>
+        <button class="tb" onclick="sel(this,'color','blue-gold')">💙 Blue & Gold</button>
+        <button class="tb" onclick="sel(this,'color','green')">💚 Green</button>
+        <button class="tb" onclick="sel(this,'color','auto')">🎨 AI Auto</button>
+      </div>
+    </div>
+
+    <!-- Reference -->
+    <div class="card">
+      <div class="sec-label">Reference ছবি (ঐচ্ছিক)</div>
+      <div class="upload-area">
+        <input type="file" accept="image/*" id="refImg" onchange="previewImg(this)">
+        <div id="uploadDefault">
+          <div style="font-size:26px;margin-bottom:6px">📷</div>
+          <div style="font-size:13px;color:var(--muted)">ছবি আপলোড করো</div>
+        </div>
+        <img id="uploadPreview" class="upload-preview">
+      </div>
+    </div>
+
+    <!-- Extra -->
+    <div class="card">
+      <div class="sec-label">অতিরিক্ত নির্দেশনা (ঐচ্ছিক)</div>
+      <textarea id="extraNote" placeholder="যেমন: আগুনের effect দাও, বা face দেখাও..."></textarea>
+    </div>
+
+    <!-- Generate -->
+    <button class="gen-btn" id="genBtn" onclick="generateThumbnail()">
+      <span class="shine"></span>
+      🚀 থাম্বনেইল বানাও (১০ ক্রেডিট)
+    </button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="placeholder" id="placeholder">
+      <div class="big-icon">🎨</div>
+      <div style="font-size:20px;font-weight:600;color:var(--text)">তোমার থাম্বনেইল এখানে দেখাবে</div>
+      <div style="font-size:14px">বাম দিকে তথ্য দিয়ে "থাম্বনেইল বানাও" বাটন চাপো</div>
+    </div>
+    <div class="loader-wrap" id="loader">
+      <div class="spinner"></div>
+      <div class="loader-text" id="loaderText">AI থাম্বনেইল তৈরি করছে...</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:8px">১০-৩০ সেকেন্ড সময় লাগতে পারে</div>
+    </div>
+    <div class="result-area" id="resultArea">
+      <div class="result-header">
+        <div class="result-title">✅ থাম্বনেইল তৈরি হয়েছে!</div>
+        <div class="result-btns">
+          <button class="retry-btn" onclick="generateThumbnail()">🔄 আবার বানাও</button>
+          <a class="dl-btn" id="downloadBtn" download="thumbnail.png">⬇️ Download</a>
+        </div>
+      </div>
+      <img id="resultImg" alt="Generated Thumbnail">
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="upgradeModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeUpgrade()">✕</button>
+    <div class="modal-title">⚡ Upgrade করো</div>
+    <div class="modal-sub">আরো ক্রেডিট নিয়ে থাম্বনেইল বানাও</div>
+    <div class="plan-options">
+      <div class="plan-opt selected" id="planMonthly" onclick="selectPlan('monthly')">
+        <div class="plan-opt-name">মাসিক</div>
+        <div class="plan-opt-price">১৫০ ৳</div>
+        <div class="plan-opt-credits">৫০০০ ক্রেডিট<br>৫০০টি থাম্বনেইল</div>
+      </div>
+      <div class="plan-opt" id="planYearly" onclick="selectPlan('yearly')">
+        <div class="plan-opt-name">বার্ষিক</div>
+        <div class="plan-opt-price">১০০০ ৳</div>
+        <div class="plan-opt-credits">৬০,০০০ ক্রেডিট<br>৬০০০টি থাম্বনেইল</div>
+      </div>
+    </div>
+    <button class="pay-btn" onclick="proceedPayment()">💳 পেমেন্ট করো</button>
+    <div class="contact-note">
+      পেমেন্টের পর WhatsApp করো: <a href="https://wa.me/8801747196759" target="_blank">01747196759</a><br>
+      অথবা Email: <a href="mailto:sagorffcl@gmail.com">sagorffcl@gmail.com</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAGXcRUon_JcN0V8u-QWYlxyYsH_5k1jEg",
+  authDomain: "thumbnailbd.firebaseapp.com",
+  projectId: "thumbnailbd",
+  storageBucket: "thumbnailbd.firebasestorage.app",
+  messagingSenderId: "644020331665",
+  appId: "1:644020331665:web:3c64d94ee88f23e0228b30"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const GEMINI_KEY = "AIzaSyA6XlEAWi5pumMj8uXFBjm0qMpa434BmcA";
+
+let currentUser = null, userData = null;
+const sels = { platform:'youtube', ratio:'16:9', style:'bold-dramatic', color:'dark' };
+let textColor = 'auto';
+let selectedPlan = 'monthly';
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href='login.html'; return; }
+  currentUser = user;
+  document.getElementById('userName').textContent = user.displayName || user.email.split('@')[0];
+  const ref = doc(db, 'users', user.uid);
+  const snap = await getDoc(ref);
+  if (snap.exists()) {
+    userData = snap.data();
+    updateCreditUI();
+  }
+});
+
+function updateCreditUI() {
+  const plan = userData.plan || 'free';
+  const credits = userData.credits ?? 50;
+  const maxCredits = plan==='free'?50: plan==='monthly'?5000:60000;
+  const badge = document.getElementById('planBadge');
+  badge.textContent = plan==='free'?'FREE': plan==='monthly'?'MONTHLY':'YEARLY';
+  badge.className = `plan-badge plan-${plan}`;
+  document.getElementById('creditNum').textContent = `${credits} ক্রেডিট`;
+  document.getElementById('creditFill').style.width = `${Math.min(credits/maxCredits*100,100)}%`;
+  if (credits < 10) {
+    document.getElementById('upgradeWrap').style.display = 'block';
+  }
+}
+
+window.sel = function(btn, key, val) {
+  // Remove active from same key buttons
+  document.querySelectorAll('.tb').forEach(b => {
+    if(b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${key}'`)) b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  sels[key] = val;
+  if (key==='platform') {
+    const rg = document.getElementById('ratioGroup');
+    if (val==='youtube') {
+      rg.innerHTML=`<button class="tb active" onclick="sel(this,'ratio','16:9')">16:9 (YouTube)</button><button class="tb" onclick="sel(this,'ratio','9:16')">9:16 (Shorts)</button>`;
+      sels.ratio='16:9';
+    } else {
+      rg.innerHTML=`<button class="tb active" onclick="sel(this,'ratio','1:1')">1:1 (Square)</button><button class="tb" onclick="sel(this,'ratio','4:5')">4:5 (Portrait)</button><button class="tb" onclick="sel(this,'ratio','9:16')">9:16 (Stories)</button>`;
+      sels.ratio='1:1';
+    }
+  }
+}
+
+window.setColorAuto = function() {
+  textColor = 'auto';
+  document.getElementById('colorAutoBtn').classList.add('active');
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
+}
+window.setColor = function(el, color) {
+  textColor = color;
+  document.getElementById('colorAutoBtn').classList.remove('active');
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('customColor').value = color;
+  document.getElementById('customColorHex').textContent = color;
+}
+window.setCustomColor = function(color) {
+  textColor = color;
+  document.getElementById('colorAutoBtn').classList.remove('active');
+  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('active'));
+  document.getElementById('customColorHex').textContent = color;
+}
+
+window.previewImg = function(input) {
+  if(input.files&&input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('uploadPreview').src=e.target.result;
+      document.getElementById('uploadPreview').style.display='block';
+      document.getElementById('uploadDefault').style.display='none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+window.logoutUser = async function() {
+  await signOut(auth);
+  window.location.href='index.html';
+}
+
+window.showUpgrade = function() {
+  document.getElementById('upgradeModal').classList.add('show');
+}
+window.closeUpgrade = function() {
+  document.getElementById('upgradeModal').classList.remove('show');
+}
+window.selectPlan = function(plan) {
+  selectedPlan = plan;
+  document.getElementById('planMonthly').classList.toggle('selected', plan==='monthly');
+  document.getElementById('planYearly').classList.toggle('selected', plan==='yearly');
+}
+window.proceedPayment = function() {
+  const price = selectedPlan==='monthly'?'১৫০':'১০০০';
+  const msg = `আমি ThumbAI BD তে ${selectedPlan==='monthly'?'মাসিক':'বার্ষিক'} প্ল্যান নিতে চাই (${price} টাকা)। আমার email: ${currentUser?.email}`;
+  window.open(`https://wa.me/8801747196759?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+window.generateThumbnail = async function() {
+  if (!userData) return;
+  const credits = userData.credits ?? 0;
+  if (credits < 10) {
+    showUpgrade();
+    return;
+  }
+
+  const titleBn = document.getElementById('titleBn').value.trim();
+  const titleEn = document.getElementById('titleEn').value.trim();
+  if (!titleBn) { alert('বাংলা টাইটেল দিন!'); return; }
+
+  document.getElementById('placeholder').style.display='none';
+  document.getElementById('resultArea').style.display='none';
+  document.getElementById('loader').style.display='block';
+  document.getElementById('genBtn').disabled=true;
+
+  const styleMap = {
+    'bold-dramatic':'bold dramatic eye-catching with strong contrast and powerful dynamic typography',
+    'cinematic':'cinematic movie poster style with dramatic lighting and depth',
+    'minimal':'clean minimal modern design with elegant white space',
+    'news':'breaking news broadcast style with professional layout and urgency',
+    'vlog':'casual lifestyle vlog with bright vibrant warm colors',
+    'colorful':'explosive vibrant multi-color design with energy and excitement'
+  };
+  const colorMap = {
+    'dark':'deep dark background','light':'bright white/light background',
+    'red-black':'red and black high contrast','blue-gold':'royal blue and gold',
+    'green':'lush green themed background','auto':'choose the most visually striking background color that complements the content'
+  };
+
+  const textColorInstruction = textColor==='auto'
+    ? 'Choose the most visually impactful and readable text color that creates maximum contrast and visual appeal.'
+    : `The main Bengali text MUST be in this exact color: ${textColor}.`;
+
+  const extra = document.getElementById('extraNote').value.trim();
+
+  const prompt = `Create a professional eye-catching ${sels.platform} thumbnail image.
+Aspect ratio: ${sels.ratio}. Style: ${styleMap[sels.style]}.
+Background: ${colorMap[sels.color]}.
+
+CRITICAL TEXT REQUIREMENT:
+- Write LARGE BOLD STYLISH Bengali (Bangla Unicode) text: "${titleBn}"
+- Phonetic spelling for reference: "${titleEn || titleBn}"
+- ${textColorInstruction}
+- The Bengali text must be the HERO of the design — make it huge, bold, and impossible to miss
+- Use dramatic drop shadows, outlines, or glow effects on the text
+- কেঁচি bold decorative Bengali typography style
+
+Additional: The thumbnail must look like a top Bangladeshi YouTuber made it.
+${extra ? 'Extra instructions: '+extra : ''}
+Make it extremely professional, high quality, trending, viral-worthy thumbnail.`;
+
+  try {
+    const texts = ['AI থাম্বনেইল তৈরি করছে...','Gemini কাজ করছে...','প্রায় হয়ে গেছে...','একটু আর...'];
+    let ti = 0;
+    const interval = setInterval(()=>{ ti=(ti+1)%texts.length; document.getElementById('loaderText').textContent=texts[ti]; },4000);
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_KEY}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        contents:[{parts:[{text:prompt}]}],
+        generationConfig:{responseModalities:["TEXT","IMAGE"]}
+      })
+    });
+
+    clearInterval(interval);
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+
+    let imgData = null;
+    for (const part of data.candidates?.[0]?.content?.parts || []) {
+      if (part.inlineData) { imgData = part.inlineData; break; }
+    }
+    if (!imgData) throw new Error('ছবি তৈরি হয়নি, আবার চেষ্টা করো');
+
+    const src = `data:${imgData.mimeType};base64,${imgData.data}`;
+    document.getElementById('resultImg').src = src;
+    document.getElementById('downloadBtn').href = src;
+    document.getElementById('loader').style.display='none';
+    document.getElementById('resultArea').style.display='block';
+
+    // Deduct credits
+    const ref = doc(db,'users',currentUser.uid);
+    await updateDoc(ref, { credits: increment(-10), thumbnailCount: increment(1) });
+    userData.credits = credits - 10;
+    userData.thumbnailCount = (userData.thumbnailCount||0) + 1;
+    updateCreditUI();
+
+  } catch(err) {
+    document.getElementById('loader').style.display='none';
+    document.getElementById('placeholder').style.display='flex';
+    alert('❌ থাম্বনেইল তৈরি হয়নি: ' + err.message);
+  }
+  document.getElementById('genBtn').disabled=false;
+}
+</script>
+</body>
+</html>
